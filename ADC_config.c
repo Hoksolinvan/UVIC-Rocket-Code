@@ -2,6 +2,9 @@
 
 
 
+const int THRESHOLD = 500; // for low voltage example, because I think that the current board always have >=1500.
+//const int THRESHOLD = 3000; // 3000 
+
 int main(){
 	 HAL_Init();
 	  SystemClock_Config();
@@ -28,29 +31,32 @@ int main(){
   	ADC_handle.Init.OversamplingMode = DISABLE;
   	ADC_handle.Init.TriggerFrequencyMode = ADC_TRIGGER_FREQ_HIGH;
   	HAL_ADC_Init(&ADC_handle);
+
+
+	ADC_ChannelConfTypeDef sConfig = {0};
+  	sConfig.Channel = ADC_CHANNEL_VREFINT;
+  	sConfig.Rank = ADC_REGULAR_RANK_1;
+  	sConfig.SamplingTime = ADC_SAMPLINGTIME_COMMON_1;
+  	HAL_ADC_ConfigChannel(&ADC_handle, &sConfig);
+  	HAL_ADCEx_Calibration_Start(&ADC_handle);
+
   	HAL_ADC_Start(&ADC_handle);
 
 
 
 	 while (1)
     {
-      /* USER CODE END WHILE */
-//	   char *msg = "Place holder text goes here brrr\r\n";
+  
+	char *msg = "placeholder text\r\n";
 
-	    // Transmit message via UART
-	    // Parameters: UART handle, data pointer, data size, timeout (ms)
 
 	  HAL_ADC_PollForConversion(&ADC_handle,100);
 	  uint32_t temp = HAL_ADC_GetValue(&ADC_handle);
-	  if(temp<=3.5){
-		  // exit
-		  HAL_PWREx_EnterSHUTDOWNMode();
+	  if(temp<=THRESHOLD){		 
+		 HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
 	  }
 
 
-	    // Wait 1 second before sending again
-
-      /* USER CODE BEGIN 3 */
     }
 }
