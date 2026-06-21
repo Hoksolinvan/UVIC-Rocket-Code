@@ -11,6 +11,8 @@ void SystemClock_Config(void);
 
 #define BMP3_I2C_ADDR (BMP3_ADDR_I2C_PRIM << 1)
 #define BMP3_I2C_TIMEOUT 100
+#define BUFFER_SIZE 256
+
 
 BMP3_INTF_RET_TYPE i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_ptr){
 
@@ -49,7 +51,9 @@ MX_GPIO_Init();
 MX_USART1_UART_Init();
 MX_I2C2_Init();
 
-
+int circular_buffer_temp[BUFFER_SIZE] {0};
+int circular_buffer_pressure[BUFFER_SIZE] {0};
+int increment_value = 0;
 
 struct bmp3_dev dev = {0};
 struct bmp3_settings settings = {0};
@@ -87,6 +91,9 @@ struct bmp3_status status = {0};
 
   rslt = bmp3_get_sensor_data(BMP3_PRESS_TEMP, &data, &dev);
     snprintf(msg, sizeof(msg),"TEMP: %d C, Pressure: %d Pa \n",(int)data.temperature, (int)data.pressure);
+    circular_buffer_temp[increment_value]=(int) data.temperature;
+    circular_buffer_pressure[increment_value]=(int) data.pressure;
+    increment_value = (increment_value + 1) %BUFFER_SIZE;
     HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
     HAL_DELAY(500);
   }
