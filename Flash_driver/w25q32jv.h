@@ -1,7 +1,10 @@
 #pragma once
 
+#include <stdint.h>
+#include <stdbool.h>
 
 #define CHIP_ERASE 0xC7
+#define WRITE_ENABLE 0x06
 
 
-void W25Q_ChipErase(void);
+void send_write_enable(void);
