@@ -2,6 +2,11 @@
 #include "w25q32jv.h"
 
 
-void W25Q_ChipErase(void){
+void send_write_enable(void);
+{
+    uint8_t tx[1] = { WRITE_ENABLE }; 
 
+    spi_cs_low();  
+    spi_transfer(tx, NULL, 1);  
+    spi_cs_high();   
 }
