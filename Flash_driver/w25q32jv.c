@@ -2,7 +2,7 @@
 #include "w25q32jv.h"
 
 
-void send_write_enable(void);
+void send_write_enable(void)
 {
     uint8_t tx[1] = { WRITE_ENABLE }; 
 
